@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: python-deployment
+  namespace: interview-test
+  labels:
+    app: code-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: code-server
+  template:
+    metadata:
+      labels:
+        app: code-server
+    spec:
+      serviceAccountName: debug
+      initContainers:
+      - name: download-extensions
+        image: lscr.io/linuxserver/code-server:latest
+        command:
+          - /app/code-server/lib/node 
+          - /app/code-server
+          - --bind-addr=0.0.0.0:8443 
+          - --user-data-dir=/config/data 
+          - --extensions-dir=/config/extensions 
+          - --disable-telemetry 
+          - --auth=password 
+          - --install-extension=hashicorp.terraform
+          - --install-extension=shd101wyy.markdown-preview-enhanced
+          - /config/workspace
+        env:
+          - name: PUID
+            value: "1000"
+          - name: PGID
+            value: "1000"
+          - name: TZ
+            value: "Europe/Amsterdam"
+          - name: PASSWORD
+            value: "interview"
+          - name: SUDO_PASSWORD
+            value: "interview"
+        volumeMounts:
+        - mountPath: /config
+          name: config
+
+
+      containers:
+      - name: python
+        image: lscr.io/linuxserver/code-server:latest
+        env:
+          - name: PUID
+            value: "1000"
+          - name: PGID
+            value: "1000"
+          - name: TZ
+            value: "Europe/Amsterdam"
+          - name: PASSWORD
+            value: "interview"
+          - name: SUDO_PASSWORD
+            value: "interview"
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 1000m
+            memory: 1512Mi
+        ports:
+        - containerPort: 8443
+          name: http
+        volumeMounts:
+        - mountPath: /config
+          name: config
+      volumes:
+        - name: config
+          emptyDir:
+            sizeLimit: 500Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-deployment
+  namespace: interview-test
+  labels:
+    app: code-server
+spec:
+  ports:
+  - port: 80
+    targetPort: http
+  selector:
+    app: code-server
+  type: LoadBalancer
+
+
+
+#### Permissions
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: debug
+  namespace: interview-test
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: debugmth-python
+subjects:
+- kind: ServiceAccount
+  name: debug
+  namespace: interview-test
+roleRef:
+  kind: Role
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
