@@ -18,7 +18,8 @@ spec:
       serviceAccountName: debug
       initContainers:
       - name: download-extensions
-        image: lscr.io/linuxserver/code-server:latest
+        image: markthebault/vscode-interview:latest
+        imagePullPolicy: Always
         command:
           - /app/code-server/lib/node 
           - /app/code-server
@@ -48,7 +49,8 @@ spec:
 
       containers:
       - name: python
-        image: lscr.io/linuxserver/code-server:latest
+        image: markthebault/vscode-interview:latest
+        imagePullPolicy: Always
         env:
           - name: PUID
             value: "1000"
@@ -112,6 +114,6 @@ subjects:
   name: debug
   namespace: interview-test
 roleRef:
-  kind: Role
-  name: admin
+  kind: ClusterRole
+  name: cluster-admin
   apiGroup: rbac.authorization.k8s.io

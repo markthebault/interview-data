@@ -1,4 +1,4 @@
-IMAGE_NAME=markthebault/vcode-interview:latest
+IMAGE_NAME=markthebault/vscode-interview:latest
 
 build.m1:
 	docker buildx build --platform linux/amd64 -t $(IMAGE_NAME) --push .

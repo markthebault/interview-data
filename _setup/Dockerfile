@@ -7,12 +7,11 @@ RUN apt update && apt install -y \
     wget \
     zip
 
-ARG TFENV_VERSION=v2.2.2
 ARG TERRAFORM_VERSION=1.3.8
-RUN git clone https://github.com/tfutils/tfenv.git --depth 1 --branch ${TFENV_VERSION} ~/.tfenv && \
-    ln -s ~/.tfenv/bin/* /usr/local/bin/ && \
-    tfenv install ${TERRAFORM_VERSION} && \
-    tfenv use ${TERRAFORM_VERSION}
+RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+    mv terraform /usr/local/bin
 
 # HELM
 ARG HELM_VERSION=v3.5.4
