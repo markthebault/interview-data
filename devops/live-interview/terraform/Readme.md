@@ -2,6 +2,8 @@
 
 This is a set of questions that will increase the difficulty along the way
 
+**Make sure you run terraform to test your code on all questions**
+
 ## 1. Create a TLS private key
 Using terraform create a TLS private key with `RSA` encryption and `4096` bits. You **must use** the hashicorp tls provider.
 
@@ -19,6 +21,27 @@ EXPIRE ON = now + 10 years
 The next section if to assess the possibility of creating several certificates from a map.
 
 Use a variable called `certificates` where you can specify the values above for each certificate you will generate.
+
+You can set the values of this variable either by using **defaults** or using `terraform.tfvars`
+
+Example:
+```javascript
+// Example of values that can be passed in terraform.tfvars
+certificates={
+  cert1 = {
+    param1 = "...."
+    param2 = "...."
+    param3 = "...."
+  },
+  cert2 = {
+    param1 = "...."
+    param2 = "...."
+    param3 = "...."
+  },
+  cert3 = { .... }
+}
+
+```
 
 ## 4. Output
 Add the certificates generated in a previous section in a `terraform output` for later use. This variable should contain the map of all the certificated you generated previously.
