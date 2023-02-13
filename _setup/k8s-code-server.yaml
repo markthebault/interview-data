@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: python-deployment
+  name: interview-vscode
   namespace: interview-test
   labels:
     app: code-server
@@ -15,7 +15,7 @@ spec:
       labels:
         app: code-server
     spec:
-      serviceAccountName: debug
+      serviceAccountName: interview-vscode
       initContainers:
       - name: download-extensions
         image: markthebault/vscode-interview:latest
@@ -45,8 +45,6 @@ spec:
         volumeMounts:
         - mountPath: /config
           name: config
-
-
       containers:
       - name: python
         image: markthebault/vscode-interview:latest
@@ -83,7 +81,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: python-deployment
+  name: interview-vscode
   namespace: interview-test
   labels:
     app: code-server
@@ -94,26 +92,38 @@ spec:
   selector:
     app: code-server
   type: LoadBalancer
-
-
-
 #### Permissions
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: debug
+  name: interview-vscode
   namespace: interview-test
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: debugmth-python
+  name: interview-vscode
+  namespace: interview-test
 subjects:
 - kind: ServiceAccount
-  name: debug
+  name: interview-vscode
   namespace: interview-test
 roleRef:
   kind: ClusterRole
   name: cluster-admin
   apiGroup: rbac.authorization.k8s.io
+---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   name: interview-vscode
+#   namespace: interview-test
+# subjects:
+# - kind: ServiceAccount
+#   name: interview-vscode
+#   namespace: interview-test
+# roleRef:
+#   kind: ClusterRole
+#   name: cluster-admin
+#   apiGroup: rbac.authorization.k8s.io
